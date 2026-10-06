@@ -1,17 +1,11 @@
-import Navbar from
-  '../components/Navbar';
-
-import {
-  useAuth
-} from '../context/AuthContext';
-
+import Navbar from '../components/Navbar';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {
 
-  const {
-    user
-  } = useAuth();
-
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="dashboard-page">
@@ -133,6 +127,21 @@ export default function DashboardPage() {
             </ul>
 
           </article>
+
+          {
+            user.role === 'admin' && (
+              <section className="admin-actions">
+
+                <button type="button" onClick={
+                  () => navigate('/usuarios')
+                  }
+                >
+                  Administrar usuarios
+                </button>
+
+              </section>
+            )
+          }
 
         </section>
 

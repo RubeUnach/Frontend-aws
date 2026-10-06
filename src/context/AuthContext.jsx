@@ -14,70 +14,55 @@ const AuthContext =
   createContext(null);
 
 
-export function AuthProvider({
-  children
-}) {
+export function AuthProvider({children}) {
 
-  const [user, setUser] =
-    useState(null);
+  const [user, setUser] = useState(null);
 
-  const [loading, setLoading] =
-    useState(true);
-
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     async function restoreSession() {
-
-      const token =
-        authService.getToken();
-
-
+      const token = authService.getToken();
       if (!token) {
         setLoading(false);
         return;
       }
 
-
       try {
-
-        const currentUser =
-          await authService
-            .getCurrentUser();
-
-        setUser(
-          currentUser
-        );
+        const currentUser = await authService.getCurrentUser();
+        setUser(currentUser);
 
       } catch {
-
         authService.logout();
-
         setUser(null);
 
       } finally {
-
         setLoading(false);
-
       }
     }
 
-
     restoreSession();
-
   }, []);
 
 
-  async function login(
-    username,
-    password
-  ) {
+  useEffect(() => {
+    function handleInvalidSession() {
+      authService.logout();
+      setUser(null);
 
-    await authService.login(
-      username,
-      password
-    );
+    }
 
+    window.addEventListener('auth:invalid-session', handleInvalidSession);
+
+    return () => {
+      window.removeEventListener('auth:invalid-session', handleInvalidSession);
+    };
+
+  }, []);
+
+  async function login(username, password) {
+
+    await authService.login(username, password);
 
     /*
      * No confiamos únicamente
@@ -86,15 +71,9 @@ export function AuthProvider({
      * Consultamos /auth/me para
      * recuperar el estado vigente.
      */
-    const currentUser =
-      await authService
-        .getCurrentUser();
+    const currentUser = await authService.getCurrentUser();
 
-
-    setUser(
-      currentUser
-    );
-
+    setUser(currentUser);
 
     return currentUser;
   }
