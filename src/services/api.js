@@ -69,6 +69,23 @@ async function request(
 
 
   if (!response.ok) {
+
+    /*
+    * Solo invalidamos una sesión cuando
+    * la solicitud utilizaba autenticación.
+    *
+    * Un 401 producido por un login incorrecto
+    * no debe generar este evento.
+    */
+    if (auth && (response.status === 401 || data?.error === 'ACCOUNT_DISABLED')) {
+      window.dispatchEvent(
+        new CustomEvent(
+          'auth:invalid-session'
+        )
+      );
+    }
+
+
     const error =
       new Error(
         data?.message ||

@@ -1,18 +1,10 @@
-import {
-  Navigate,
-  Route,
-  Routes
-} from 'react-router-dom';
-
-import LoginPage from
-  '../pages/LoginPage';
-
-import DashboardPage from
-  '../pages/DashboardPage';
-
-import ProtectedRoute from
-  '../components/ProtectedRoute';
-
+import { Navigate, Route, Routes } from 'react-router-dom';
+import LoginPage from '../pages/LoginPage';
+import DashboardPage from '../pages/DashboardPage';
+import ProtectedRoute from '../components/ProtectedRoute';
+import UsersPage from '../pages/UsersPage';
+import ForbiddenPage from '../pages/ForbiddenPage';
+import RoleRoute from '../components/RoleRoute';
 
 export default function AppRouter() {
 
@@ -55,6 +47,35 @@ export default function AppRouter() {
             to="/dashboard"
             replace
           />
+        }
+      />
+
+      <Route
+        path="/usuarios"
+        element={
+          <ProtectedRoute>
+
+            <RoleRoute
+              allowedRoles={[
+                'admin'
+              ]}
+            >
+
+              <UsersPage />
+
+            </RoleRoute>
+
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/forbidden"
+        element={
+          <ProtectedRoute>
+            <ForbiddenPage />
+          </ProtectedRoute>
         }
       />
 
